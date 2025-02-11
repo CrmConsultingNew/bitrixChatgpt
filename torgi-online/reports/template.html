@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="style.css?v=4">
+    <script type="text/javascript" src="jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="main.js"></script>
+    <title>Reports</title>
+</head>
+<body>
+<form action="/" method="GET">
+    <label for="department">Роль сотрудников:</label>
+    <select id="department" name="department">
+        <option value="{{.B24ManagerDepartment}}" {{if eq .Department 5}}selected{{end}}>Менеджеры</option>
+        <option value="{{.B24ITDepartment}}" {{if eq .Department 10}}selected{{end}}>Технические специалисты</option>
+    </select>
+    <label for="start">Период: с</label>
+    <input type="date" id="start" name="start" value="{{.Start}}">
+    <label for="finish">по</label>
+    <input type="date" id="finish" name="finish" value="{{.Finish}}">
+    <button type="submit">Применить</button>
+</form>
+
+<table border="1">
+    <thead>
+    <tr>
+        <th>Менеджер</th>
+        <th>Кол-во задач</th>
+        <th>Детали задач</th>
+    </tr>
+    </thead>
+    <tbody>
+    {{range .Users}}
+    <tr>
+        <td>{{.Name}} {{.LastName}}</td>
+        <td>{{index $.Tasks .ID "Count"}}</td>
+        <td>
+            {{range index $.Tasks .ID "Tasks"}}
+            <a href="{{.Link}}" target="_blank">{{.Title}}</a><br>
+            {{end}}
+        </td>
+    </tr>
+    {{end}}
+    </tbody>
+</table>
+</body>
+</html>

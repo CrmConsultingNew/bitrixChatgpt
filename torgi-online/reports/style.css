@@ -1,0 +1,19 @@
+a:hover {
+    color: #f00;
+}
+
+a {
+    cursor: pointer;
+    color: #00e;
+}
+
+#modal {
+    width: 100%;
+    /*height: 100%;*/
+    position: absolute;
+    top: 0;
+    left: 0;
+    background-color: #fff;
+    padding: 10px;
+    border-bottom: 5px solid #888;
+}

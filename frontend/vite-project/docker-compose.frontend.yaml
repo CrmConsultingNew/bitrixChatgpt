@@ -1,0 +1,10 @@
+version: '3'
+services:
+  frontend-app:
+    build:
+      context: /root/project/bitrix/vite-project
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    volumes:
+      - /root/project/bitrix/vite-project  # Replace with the actual path to your frontend app
