@@ -4,6 +4,7 @@ import (
 	"bitrix_app/backend/bitrix/endpoints"
 	"bitrix_app/backend/mail"
 	"bitrix_app/backend/routes"
+	"bitrix_app/medi"
 	"bitrix_app/metrologiya"
 	"fmt"
 	"github.com/joho/godotenv"
@@ -18,6 +19,14 @@ import (
 )
 
 func main() {
+	medi.GetContactsListWithCustomFieldsBirthdate()
+	medi.ReadContactsJsonAndGetClientContactPhone()
+	return
+	//medi.GetContactsListWithCustomFieldsBirthdate()
+	//medi.GetContactsList()
+	//medi.UpdateDateInContacts()
+
+	//medi.GetContactsListAndUpdate()
 
 	/*StartTgBot()
 	return*/
@@ -36,8 +45,10 @@ func main() {
 	if err != nil {
 		log.Printf("Error fetching user IDs: %v", err)
 	}
+
+	// SCHEDULERS
 	metrologiya.StartScheduler()
-	//fmt.Println("service starting...")
+	medi.StartMediScheduler()
 
 	// Загрузка переменных окружения из файла .env
 	if err := godotenv.Load(filepath.Join(".env")); err != nil {

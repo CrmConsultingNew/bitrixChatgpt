@@ -16,6 +16,7 @@ import (
 	"bitrix_app/backend/mail"
 	"bitrix_app/backend/widget"
 	"bitrix_app/evroangar"
+	"bitrix_app/medi"
 	"bitrix_app/metrologiya"
 	"bitrix_app/moscowTalks"
 	"bitrix_app/torgi_new"
@@ -23,6 +24,9 @@ import (
 )
 
 func Router() {
+
+	// МЕДИ
+	http.HandleFunc("/medi_birthdate", medi.StartMedi)
 
 	// ТОРГИ
 	http.HandleFunc("/api/start_torgi", torgi_new.StartTorgi)
