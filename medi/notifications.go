@@ -11,13 +11,9 @@ import (
 
 var GlobalTextMessageToClient string
 
-func SendMessageToClient(phoneNumber string) {
-
-	// todo return, its done!!!
-	sendMessageToSMSRU("9A57992F-5DF0-9F20-BC3C-7C38EF743CA7", phoneNumber, GlobalTextMessageToClient)
-
-	// todo wait Client authorize!!!
-	sendMessageToWazzup("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", phoneNumber, "whatsapp", GlobalTextMessageToClient)
+func SendMessageToClient(phoneNumber string, message string) {
+	sendMessageToSMSRU("9A57992F-5DF0-9F20-BC3C-7C38EF743CA7", phoneNumber, message)
+	sendMessageToWazzup("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", phoneNumber, "whatsapp", message)
 }
 
 // sendMessageToWazzup отправляет сообщение через Wazzup API

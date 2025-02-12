@@ -19,10 +19,10 @@ import (
 )
 
 func main() {
-	medi.GetContactsListWithCustomFieldsBirthdate()
+	/*medi.GetContactsListWithCustomFieldsBirthdate()
 	medi.ReadContactsJsonAndGetClientContactPhone()
 	log.Println("process started")
-	return
+	return*/
 	//medi.GetContactsListWithCustomFieldsBirthdate()
 	//medi.GetContactsList()
 	//medi.UpdateDateInContacts()

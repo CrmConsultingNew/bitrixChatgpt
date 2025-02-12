@@ -22,16 +22,20 @@ func StartMedi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Ждем до 08:00 по Москве
-	//waitUntilEightAM()
+	// Ждем до 08:00 по Москве (если нужно)
+	// waitUntilEightAM()
 
-	// Отправляем поздравления
+	// Сообщение для отправки
+	message := "Скоро Ваш день рождения!\n" +
+		"Для каждого из нас - это особая дата!\n" +
+		"И, конечно же, никакой День рождения не может обойтись без приятных сюрпризов.\n" +
+		"А вот и они! Примите от нас искренние поздравления и подарок, " +
+		"дополнительная 10 % скидка на наши услуги.\n" +
+		"*Скидка действует в течение 5 (пяти) дней до и после даты рождения."
+
+	// Отправляем сообщение каждому контакту
 	for _, contact := range contacts {
-		GlobalTextMessageToClient = fmt.Sprintf(
-			"Уважаемый %s %s %s. Компания Меди поздравляет с днем рождения!",
-			contact["last_name"], contact["name"], contact["second_name"],
-		)
-		SendMessageToClient(contact["phone"])
+		SendMessageToClient(contact["phone"], message)
 	}
 
 	w.WriteHeader(http.StatusOK)
