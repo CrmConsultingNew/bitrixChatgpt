@@ -21,6 +21,7 @@ import (
 func main() {
 	medi.GetContactsListWithCustomFieldsBirthdate()
 	medi.ReadContactsJsonAndGetClientContactPhone()
+	log.Println("process started")
 	return
 	//medi.GetContactsListWithCustomFieldsBirthdate()
 	//medi.GetContactsList()
