@@ -23,7 +23,7 @@ type ContactResponse struct {
 
 // ReadContactsJsonAndGetClientContactPhone читает JSON и возвращает контакты с номерами
 func ReadContactsJsonAndGetClientContactPhone() []map[string]string {
-	fileName := "bitrixChatgpt/birthDatesContactsLast5Days.json"
+	fileName := "birthDatesContactsLast5Days.json"
 	data, err := os.ReadFile(fileName)
 	if err != nil {
 		log.Println("Ошибка при открытии файла:", err)
