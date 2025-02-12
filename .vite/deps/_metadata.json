@@ -1,0 +1,34 @@
+{
+  "hash": "a663eebc",
+  "configHash": "428d3d81",
+  "lockfileHash": "e3b0c442",
+  "browserHash": "9835c02e",
+  "optimized": {
+    "axios": {
+      "src": "../../frontend/vite-project/node_modules/axios/index.js",
+      "file": "axios.js",
+      "fileHash": "76b73d77",
+      "needsInterop": false
+    },
+    "vue": {
+      "src": "../../frontend/vite-project/node_modules/vue/dist/vue.runtime.esm-bundler.js",
+      "file": "vue.js",
+      "fileHash": "2f7d7a89",
+      "needsInterop": false
+    },
+    "vue-router": {
+      "src": "../../frontend/vite-project/node_modules/vue-router/dist/vue-router.mjs",
+      "file": "vue-router.js",
+      "fileHash": "31acebf2",
+      "needsInterop": false
+    }
+  },
+  "chunks": {
+    "chunk-SJXCAED3": {
+      "file": "chunk-SJXCAED3.js"
+    },
+    "chunk-PZ5AY32C": {
+      "file": "chunk-PZ5AY32C.js"
+    }
+  }
+}
