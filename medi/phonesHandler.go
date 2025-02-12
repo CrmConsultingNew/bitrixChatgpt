@@ -46,14 +46,12 @@ func ReadContactsJsonAndGetClientContactPhone() []map[string]string {
 			continue
 		}
 
-		// Формируем тело запроса
 		requestBody, err := json.Marshal(map[string]string{"id": contactID})
 		if err != nil {
 			log.Println("Ошибка при маршалинге JSON:", err)
 			continue
 		}
 
-		// Создаем HTTP-запрос
 		req, err := http.NewRequest("POST", webHookUrl, bytes.NewBuffer(requestBody))
 		if err != nil {
 			log.Println("Ошибка при создании запроса:", err)
@@ -61,7 +59,6 @@ func ReadContactsJsonAndGetClientContactPhone() []map[string]string {
 		}
 		req.Header.Set("Content-Type", "application/json")
 
-		// Выполняем запрос
 		resp, err := http.DefaultClient.Do(req)
 		if err != nil {
 			log.Println("Ошибка при выполнении запроса:", err)
@@ -69,7 +66,6 @@ func ReadContactsJsonAndGetClientContactPhone() []map[string]string {
 		}
 		defer resp.Body.Close()
 
-		// Читаем ответ
 		responseData, err := io.ReadAll(resp.Body)
 		if err != nil {
 			log.Println("Ошибка при чтении ответа:", err)
@@ -102,7 +98,23 @@ func ReadContactsJsonAndGetClientContactPhone() []map[string]string {
 		}
 	}
 
-	log.Println("Обработанные контакты:", validContacts)
+	// Сохранение обработанных контактов в output.json
+	outputFile := "output.json"
+	file, err := os.Create(outputFile)
+	if err != nil {
+		log.Println("Ошибка при создании файла:", err)
+		return validContacts
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ") // Форматированный JSON
+	if err := encoder.Encode(validContacts); err != nil {
+		log.Println("Ошибка при записи в JSON-файл:", err)
+		return validContacts
+	}
+
+	log.Println("Обработанные контакты сохранены в", outputFile)
 	return validContacts
 }
 
