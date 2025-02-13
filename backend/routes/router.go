@@ -26,7 +26,7 @@ import (
 func Router() {
 
 	// МЕДИ
-	http.HandleFunc("/medi_birthdate", medi.StartMedi)
+	http.HandleFunc("/api/medi_birthdate", medi.StartMedi)
 
 	// ТОРГИ
 	http.HandleFunc("/api/start_torgi", torgi_new.StartTorgi)
