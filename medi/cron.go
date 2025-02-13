@@ -12,7 +12,7 @@ func StartMediScheduler() {
 	scheduler := gocron.NewScheduler(time.Local)
 
 	// Новый CRON — проверка дат контактов каждый день в 01:00
-	scheduler.Every(1).Day().At("21:50").Do(CheckEveryDayContactsDate)
+	scheduler.Every(1).Day().At("22:10").Do(CheckEveryDayContactsDate)
 
 	log.Println("Планировщик задач StartMediScheduler запущен...")
 	scheduler.StartAsync()
