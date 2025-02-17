@@ -21,32 +21,33 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("EventHandlerMedi raw data:", string(body))
 
-	// Парсим форму (для доступа к полям формы)
-	if err := r.ParseForm(); err != nil {
-		log.Println("Error parsing form:", err)
-		http.Error(w, "Failed to parse form", http.StatusBadRequest)
+	// Декодируем URL-кодированную строку
+	decodedBody, err := url.QueryUnescape(string(body))
+	if err != nil {
+		log.Println("Error decoding URL:", err)
+		http.Error(w, "Error decoding URL", http.StatusInternalServerError)
 		return
 	}
 
-	// Правильно извлекаем dealID и другие параметры
-	dealID, err := url.QueryUnescape(r.FormValue("data[FIELDS][ID]"))
+	// Парсим все параметры из строки
+	values, err := url.ParseQuery(decodedBody)
 	if err != nil {
-		log.Println("Error unescaping dealID:", err)
+		log.Println("Error parsing query:", err)
+		http.Error(w, "Error parsing query", http.StatusInternalServerError)
+		return
 	}
 
-	log.Println("Where i lose DEALID???:", dealID)
+	// Теперь мы можем безопасно извлечь все параметры
+	event := values.Get("event")
+	eventHandlerID := values.Get("event_handler_id")
+	dealID := values.Get("data[FIELDS][ID]")
 
-	event := r.FormValue("event")
-	eventHandlerID := r.FormValue("event_handler_id")
-
-	// Логируем полученные значения
 	log.Printf("Event: %s, EventHandlerID: %s, DealID: %s\n", event, eventHandlerID, dealID)
 
-	// Возвращаем ответ
-	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Received event: %s, handler ID: %s, deal ID: %s", event, eventHandlerID, dealID)
+	// Логируем все извлеченные данные
+	log.Println("Extracted values:", values)
 
-	// handleContact
+	// Обработка dealID
 	if dealID != "" {
 		contactId := getDealData(dealID)
 		if contactId != "" {
@@ -58,6 +59,10 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 	} else {
 		log.Println("dealID is empty — skipping contact lookup")
 	}
+
+	// Возвращаем ответ
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, "Received event: %s, handler ID: %s, deal ID: %s", event, eventHandlerID, dealID)
 }
 
 func getDealData(dealId string) (contactId string) {
