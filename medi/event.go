@@ -102,25 +102,30 @@ func getDealData(dealId string) (contactId string) {
 	}
 
 	log.Println("FULL GET_DEAL_DATA: ", string(body))
-	var result struct {
-		STAGE_ID   string `json:"STAGE_ID"`
-		CONTACT_ID string `json:"CONTACT_ID"`
+
+	// Корректная структура для парсинга JSON
+	var response struct {
+		Result struct {
+			STAGE_ID   string `json:"STAGE_ID"`
+			CONTACT_ID string `json:"CONTACT_ID"`
+		} `json:"result"`
 	}
 
-	if err := json.Unmarshal(body, &result); err != nil {
+	if err := json.Unmarshal(body, &response); err != nil {
 		fmt.Println("Error unmarshaling JSON:", err)
 		return ""
 	}
 
-	log.Println("result.STAGE_ID:", result.STAGE_ID)
+	log.Println("result.STAGE_ID:", response.Result.STAGE_ID)
 
-	if result.STAGE_ID == "WON" {
+	if response.Result.STAGE_ID == "WON" {
 		log.Println("dealId is WON")
-		log.Println("contactId is: ", result.CONTACT_ID)
-		return result.CONTACT_ID
+		log.Println("contactId is: ", response.Result.CONTACT_ID)
+		return response.Result.CONTACT_ID
 	} else {
 		log.Println("dealId is not WON")
 	}
+
 	return ""
 }
 
