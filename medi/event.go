@@ -7,6 +7,7 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"net/url"
 )
 
 func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
@@ -27,10 +28,10 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Правильно извлекаем dealID
-	dealID := r.Form.Get("data[FIELDS][ID]")
-	event := r.Form.Get("event")
-	eventHandlerID := r.Form.Get("event_handler_id")
+	// Правильно извлекаем dealID и другие параметры, применяя url.QueryUnescape
+	dealID, _ := url.QueryUnescape(r.Form.Get("data[FIELDS][ID]"))
+	event, _ := url.QueryUnescape(r.Form.Get("event"))
+	eventHandlerID, _ := url.QueryUnescape(r.Form.Get("event_handler_id"))
 
 	// Логируем полученные значения
 	log.Printf("Event: %s, EventHandlerID: %s, DealID: %s\n", event, eventHandlerID, dealID)
