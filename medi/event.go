@@ -101,6 +101,7 @@ func getDealData(dealId string) (contactId string) {
 		return ""
 	}
 
+	log.Println("FULL GET_DEAL_DATA: ", string(body))
 	var result struct {
 		STAGE_ID   string `json:"STAGE_ID"`
 		CONTACT_ID string `json:"CONTACT_ID"`
