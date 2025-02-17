@@ -117,6 +117,8 @@ func getDealData(dealId string) (contactId string) {
 		log.Println("dealId is WON")
 		log.Println("contactId is: ", result.CONTACT_ID)
 		return result.CONTACT_ID
+	} else {
+		log.Println("dealId is not WON")
 	}
 	return ""
 }
