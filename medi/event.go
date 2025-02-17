@@ -21,20 +21,23 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("EventHandlerMedi raw data:", string(body))
 
-	// Парсим форму
+	// Парсим форму (для доступа к полям формы)
 	if err := r.ParseForm(); err != nil {
 		log.Println("Error parsing form:", err)
 		http.Error(w, "Failed to parse form", http.StatusBadRequest)
 		return
 	}
 
-	// Правильно извлекаем dealID и другие параметры, применяя url.QueryUnescape
-	dealID, _ := url.QueryUnescape(r.Form.Get("data[FIELDS][ID]"))
+	// Правильно извлекаем dealID и другие параметры
+	dealID, err := url.QueryUnescape(r.FormValue("data[FIELDS][ID]"))
+	if err != nil {
+		log.Println("Error unescaping dealID:", err)
+	}
 
 	log.Println("Where i lose DEALID???:", dealID)
 
-	event, _ := url.QueryUnescape(r.Form.Get("event"))
-	eventHandlerID, _ := url.QueryUnescape(r.Form.Get("event_handler_id"))
+	event := r.FormValue("event")
+	eventHandlerID := r.FormValue("event_handler_id")
 
 	// Логируем полученные значения
 	log.Printf("Event: %s, EventHandlerID: %s, DealID: %s\n", event, eventHandlerID, dealID)
