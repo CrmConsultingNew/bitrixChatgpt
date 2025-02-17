@@ -164,10 +164,14 @@ func getContactData(contactId string) string {
 		return ""
 	}
 
+	log.Println("FULL GET_CONTACT_DATA:", string(body))
+
 	var result struct {
-		PHONE []struct {
-			VALUE string `json:"VALUE"`
-		} `json:"PHONE"`
+		Result struct {
+			PHONE []struct {
+				VALUE string `json:"VALUE"`
+			} `json:"PHONE"`
+		} `json:"result"`
 	}
 
 	if err := json.Unmarshal(body, &result); err != nil {
@@ -175,8 +179,9 @@ func getContactData(contactId string) string {
 		return ""
 	}
 
-	if len(result.PHONE) > 0 {
-		return result.PHONE[0].VALUE
+	if len(result.Result.PHONE) > 0 {
+		return result.Result.PHONE[0].VALUE
 	}
+
 	return "Phone not found"
 }
