@@ -30,6 +30,9 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 
 	// Правильно извлекаем dealID и другие параметры, применяя url.QueryUnescape
 	dealID, _ := url.QueryUnescape(r.Form.Get("data[FIELDS][ID]"))
+
+	log.Println("Where i lose DEALID???:", dealID)
+
 	event, _ := url.QueryUnescape(r.Form.Get("event"))
 	eventHandlerID, _ := url.QueryUnescape(r.Form.Get("event_handler_id"))
 
