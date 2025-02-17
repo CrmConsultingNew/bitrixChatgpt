@@ -11,6 +11,7 @@ import (
 
 func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 	// Читаем тело запроса
+	log.Println("EventHandlerMedi was started")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Error reading body:", err)
