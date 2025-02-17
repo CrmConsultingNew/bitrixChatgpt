@@ -8,10 +8,12 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"os"
 )
 
+const filePath = "mediDealsAndContacts.json"
+
 func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
-	// Читаем тело запроса
 	log.Println("EventHandlerMedi was started")
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
@@ -21,7 +23,6 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 	}
 	log.Println("EventHandlerMedi raw data:", string(body))
 
-	// Декодируем URL-кодированную строку
 	decodedBody, err := url.QueryUnescape(string(body))
 	if err != nil {
 		log.Println("Error decoding URL:", err)
@@ -29,7 +30,6 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Парсим все параметры из строки
 	values, err := url.ParseQuery(decodedBody)
 	if err != nil {
 		log.Println("Error parsing query:", err)
@@ -37,22 +37,26 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// Теперь мы можем безопасно извлечь все параметры
 	event := values.Get("event")
 	eventHandlerID := values.Get("event_handler_id")
 	dealID := values.Get("data[FIELDS][ID]")
 
 	log.Printf("Event: %s, EventHandlerID: %s, DealID: %s\n", event, eventHandlerID, dealID)
-
-	// Логируем все извлеченные данные
 	log.Println("Extracted values:", values)
 
-	// Обработка dealID
 	if dealID != "" {
 		contactId := getDealData(dealID)
 		if contactId != "" {
 			contactPhone := getContactData(contactId)
 			log.Println("CONTACT_PHONE is:", contactPhone)
+
+			if err := updateJSONFile(dealID, contactPhone); err != nil {
+				log.Println("Failed to update JSON file:", err)
+			}
+
+			message := "Расскажите о своих впечатлениях и поставьте нам оценку. С заботой о Вашем здоровье, клиника МЭДИ"
+			sendMessageToWazzupGetReport("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", contactPhone, "whatsapp", message)
+
 		} else {
 			log.Println("CONTACT_ID is empty")
 		}
@@ -60,9 +64,89 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 		log.Println("dealID is empty — skipping contact lookup")
 	}
 
-	// Возвращаем ответ
 	w.WriteHeader(http.StatusOK)
 	fmt.Fprintf(w, "Received event: %s, handler ID: %s, deal ID: %s", event, eventHandlerID, dealID)
+}
+
+func updateJSONFile(dealID, contactPhone string) error {
+	data := make(map[string]string)
+
+	file, err := os.Open(filePath)
+	if err == nil {
+		defer file.Close()
+		decoder := json.NewDecoder(file)
+		if err := decoder.Decode(&data); err != nil && err != io.EOF {
+			log.Println("Error decoding JSON file:", err)
+		}
+	} else if !os.IsNotExist(err) {
+		return err
+	}
+
+	data[dealID] = contactPhone
+
+	file, err = os.Create(filePath)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ")
+	if err := encoder.Encode(data); err != nil {
+		return err
+	}
+
+	log.Println("JSON file updated successfully")
+	return nil
+}
+
+func sendMessageToWazzupGetReport(apiKey, channelId, chatId, chatType, textMessage string) {
+	log.Println("sendmessageToWazzup was started....")
+	url := "https://api.wazzup24.com/v3/message"
+
+	requestBody, err := json.Marshal(map[string]interface{}{
+		"channelId": channelId,
+		"chatId":    chatId,
+		"chatType":  chatType,
+		"text":      textMessage,
+	})
+	if err != nil {
+		log.Println("Ошибка при маршалинге JSON:", err)
+		return
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	if err != nil {
+		log.Println("Ошибка при создании HTTP-запроса:", err)
+		return
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Authorization", "Bearer "+apiKey)
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		log.Println("Ошибка при выполнении запроса:", err)
+		return
+	}
+	defer resp.Body.Close()
+
+	body, err := io.ReadAll(resp.Body)
+	if err != nil {
+		log.Println("Ошибка при чтении ответа:", err)
+		return
+	}
+
+	// Логируем полный ответ от Wazzup
+	log.Printf("Ответ Wazzup: %s\n", string(body))
+
+	if resp.StatusCode != http.StatusOK && resp.StatusCode != http.StatusCreated {
+		log.Printf("Ошибка: получен статус %d\n", resp.StatusCode)
+		return
+	}
+
+	log.Println("Сообщение успешно отправлено в Wazzup!")
 }
 
 func getDealData(dealId string) (contactId string) {

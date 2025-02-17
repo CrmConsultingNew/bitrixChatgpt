@@ -13,11 +13,11 @@ var GlobalTextMessageToClient string
 
 func SendMessageToClient(phoneNumber string, message string) {
 	sendMessageToSMSRU("9A57992F-5DF0-9F20-BC3C-7C38EF743CA7", phoneNumber, message)
-	sendMessageToWazzup("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", phoneNumber, "whatsapp", message)
+	SendMessageToWazzup("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", phoneNumber, "whatsapp", message)
 }
 
-// sendMessageToWazzup отправляет сообщение через Wazzup API
-func sendMessageToWazzup(apiKey, channelId, chatId, chatType, textMessage string) {
+// SendMessageToWazzup отправляет сообщение через Wazzup API
+func SendMessageToWazzup(apiKey, channelId, chatId, chatType, textMessage string) {
 	log.Println("sendmessageToWazzup was started....")
 	url := "https://api.wazzup24.com/v3/message"
 
