@@ -52,6 +52,8 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 		if isValidRating(msg.Text) && isPhoneInContacts(msg.ChatID, contacts) {
 			log.Println("Отправляем благодарственное сообщение пользователю:", msg.ChatID)
 			sendMessageToWazzupReport("cf4f9e0a30ff4bb2adf92de77141c488", msg.ChannelID, msg.ChatID, msg.ChatType, "Благодарим Вас за высокую оценку. Пожалуйста поделитесь Вашими впечатлениями на сайте: https://medi-clinic.ru/otzyivyi/#to")
+		} else {
+			log.Println("isNotValid:", msg.Text)
 		}
 	}
 }
