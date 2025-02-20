@@ -99,7 +99,7 @@ func ReadContactsJsonAndGetClientContactPhone() []map[string]string {
 	}
 
 	// Сохранение обработанных контактов в output.json
-	outputFile := "output.json"
+	outputFile := "outputContacts.json"
 	file, err := os.Create(outputFile)
 	if err != nil {
 		log.Println("Ошибка при создании файла:", err)

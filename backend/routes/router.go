@@ -28,6 +28,7 @@ func Router() {
 	// МЕДИ
 	http.HandleFunc("/api/medi_birthdate", medi.StartMedi)
 	http.HandleFunc("/api/medi_event", medi.EventHandlerMedi)
+	http.HandleFunc("/api/medi_wazzup_event_message", medi.WazzupEventMessage)
 
 	// ТОРГИ
 	http.HandleFunc("/api/start_torgi", torgi_new.StartTorgi)

@@ -19,6 +19,7 @@ import (
 )
 
 func main() {
+
 	/*medi.GetContactsListWithCustomFieldsBirthdate()
 	medi.ReadContactsJsonAndGetClientContactPhone()
 	log.Println("process started")
@@ -29,8 +30,6 @@ func main() {
 
 	//medi.GetContactsListAndUpdate()
 
-	/*StartTgBot()
-	return*/
 	/*torgi_new.StartTorgiDebug()
 	return*/
 
