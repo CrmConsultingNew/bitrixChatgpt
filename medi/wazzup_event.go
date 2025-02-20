@@ -15,12 +15,12 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("WazzupEventMessage was startedz <-")
 	// Запускаем отправку PATCH-запроса в фоне
-	go func() {
+	/*go func() {
 		err := sendPatchRequest()
 		if err != nil {
 			log.Println("Ошибка при отправке PATCH запроса:", err)
 		}
-	}()
+	}()*/
 
 	// Читаем тело запроса и логируем его
 	rdr, err := io.ReadAll(r.Body)
