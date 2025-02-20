@@ -12,7 +12,7 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 	// Отправляем ответ 200 OK сразу, чтобы API Wazzup не посчитал запрос невалидным
 	w.WriteHeader(http.StatusOK)
 
-	log.Println("WazzupEventMessage was started <-")
+	log.Println("WazzupEventMessage was started -")
 	/*// Запускаем отправку PATCH-запроса в фоне
 	go func() {
 		err := sendPatchRequest()
