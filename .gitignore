@@ -7,3 +7,6 @@ bitrix_app
 .mediDealsAndContacts.json
 .tables.docx
 /root/bitrixChatgpt/tables.docx
+.company_mapping.json
+.bitrix_data.xlsx
+.table.xlsx

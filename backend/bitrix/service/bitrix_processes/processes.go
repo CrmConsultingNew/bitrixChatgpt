@@ -59,7 +59,6 @@ func GetProcessesListHandler(w http.ResponseWriter, r *http.Request) {
 }
 
 // GetProcessesList sends a request to the Bitrix API and returns the response data.
-// GetProcessesList sends a request to the Bitrix API and returns the response data.
 func GetProcessesList(authID, companyID, property634Value string) ([]ProcessesResponse, error) {
 	log.Println("GetProcessesList was started:")
 	bitrixMethod := "lists.element.get"
