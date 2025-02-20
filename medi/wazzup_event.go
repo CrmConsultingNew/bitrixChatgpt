@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 )
@@ -14,7 +13,7 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 
 	log.Println("WazzupEventMessage was started <-")
-	// Запускаем отправку PATCH-запроса в фоне
+	/*// Запускаем отправку PATCH-запроса в фоне
 	go func() {
 		err := sendPatchRequest()
 		if err != nil {
@@ -28,7 +27,7 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 		log.Println("Ошибка при чтении тела запроса:", err)
 		return
 	}
-	log.Println("WazzupEventMessage:", string(rdr))
+	log.Println("WazzupEventMessage:", string(rdr))*/
 }
 
 const (
