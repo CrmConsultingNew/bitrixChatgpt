@@ -170,7 +170,7 @@ func fetchTitle(url, id string) string {
 		Result struct {
 			TITLE string `json:"TITLE"`
 		} `json:"result"`
-		Error string `json:"error"`
+		Error string `json:"errors"`
 	}
 
 	log.Printf("Запрос fetchs Title: URL=%s, ID=%s", url, id)
