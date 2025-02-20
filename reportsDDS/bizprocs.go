@@ -173,7 +173,7 @@ func fetchTitle(url, id string) string {
 		Error string `json:"error"`
 	}
 
-	log.Printf("Запрос fetch Title: URL=%s, ID=%s", url, id)
+	log.Printf("Запрос fetchs Title: URL=%s, ID=%s", url, id)
 
 	resp, err := http.Post(url, "application/json", bytes.NewBuffer(requestBody))
 	if err != nil {
