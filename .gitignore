@@ -1,2 +1,6 @@
 .idea
 .env
+.bitrix_app
+.birthDatesContactsLast5Days.json
+.birthDatesContactsToday.json
+.contacts.json
