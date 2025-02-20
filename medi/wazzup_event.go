@@ -10,17 +10,25 @@ import (
 )
 
 func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
-	err := sendPatchRequest()
-	if err != nil {
-		log.Println("Err wazz: ", err.Error())
-		return
-	}
+	// Отправляем ответ 200 OK сразу, чтобы API Wazzup не посчитал запрос невалидным
+	w.WriteHeader(http.StatusOK)
 
+	log.Println("WazzupEventMessage was started")
+	// Запускаем отправку PATCH-запроса в фоне
+	go func() {
+		err := sendPatchRequest()
+		if err != nil {
+			log.Println("Ошибка при отправке PATCH запроса:", err)
+		}
+	}()
+
+	// Читаем тело запроса и логируем его
 	rdr, err := io.ReadAll(r.Body)
 	if err != nil {
-		fmt.Println(err)
+		log.Println("Ошибка при чтении тела запроса:", err)
+		return
 	}
-	log.Println("WazzupEventMessage", string(rdr))
+	log.Println("WazzupEventMessage:", string(rdr))
 }
 
 const (
