@@ -18,57 +18,6 @@ import (
 	"time"
 )
 
-func processExcelFile(filename string) {
-	// Открываем файл
-	f, err := excelize.OpenFile(filename)
-	if err != nil {
-		log.Fatalf("Ошибка при открытии файла: %v", err)
-	}
-	defer f.Close()
-
-	sheetName := f.GetSheetName(0) // Получаем название первого листа
-
-	rows, err := f.GetRows(sheetName)
-	if err != nil {
-		log.Fatalf("Ошибка при чтении строк: %v", err)
-	}
-
-	// Проход по строкам
-	for rowIndex := 1; rowIndex < len(rows); rowIndex++ {
-		cellF, err := f.GetCellValue(sheetName, fmt.Sprintf("F%d", rowIndex))
-		if err != nil {
-			log.Printf("Ошибка при чтении ячейки F%d: %v", rowIndex, err)
-			continue
-		}
-
-		// Проверяем, содержит ли ячейка ключевые слова
-		if strings.Contains(cellF, "Компания") || strings.Contains(cellF, "Сделка") {
-			nextRow := rowIndex + 1
-			if nextRow < len(rows) {
-				// Объединяем текущую и следующую ячейку
-				startCell := fmt.Sprintf("F%d", rowIndex)
-				endCell := fmt.Sprintf("F%d", nextRow)
-
-				err := f.MergeCell(sheetName, startCell, endCell)
-				if err != nil {
-					log.Printf("Ошибка при объединении %s и %s: %v", startCell, endCell, err)
-					continue
-				}
-
-				fmt.Printf("Объединены ячейки %s и %s\n", startCell, endCell)
-			}
-		}
-	}
-
-	// Сохраняем изменения
-	err = f.SaveAs(filename)
-	if err != nil {
-		log.Fatalf("Ошибка при сохранении файла: %v", err)
-	}
-
-	fmt.Println("Файл успешно обработан!")
-}
-
 func main() {
 
 	if err := godotenv.Load(filepath.Join(".env")); err != nil {

@@ -47,8 +47,11 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("Event messages: ", event.Messages)
+
 	// Проверяем каждое сообщение
 	for _, msg := range event.Messages {
+		log.Println("Message TEXT: ", msg.Text)
 		if isValidRating(msg.Text) && isPhoneInContacts(msg.ChatID, contacts) {
 			log.Println("Отправляем благодарственное сообщение пользователю:", msg.ChatID)
 			sendMessageToWazzupReport("cf4f9e0a30ff4bb2adf92de77141c488", msg.ChannelID, msg.ChatID, msg.ChatType, "Благодарим Вас за высокую оценку. Пожалуйста поделитесь Вашими впечатлениями на сайте: https://medi-clinic.ru/otzyivyi/#to")
@@ -60,6 +63,7 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 
 // Проверяет, является ли сообщение числом от 4 до 5
 func isValidRating(text string) bool {
+	log.Println("isValidRating:", text)
 	return text == "4" || text == "5"
 }
 
