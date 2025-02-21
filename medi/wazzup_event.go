@@ -139,6 +139,9 @@ func sendMessageToWazzupReport(apiKey, channelId, chatId, chatType, textMessage 
 	log.Println("Сообщение успешно отправлено в Wazzup!")
 }
 
+//
+//
+//
 // Всё что ниже уже не нужно (регистрация вебхука)
 
 const (
