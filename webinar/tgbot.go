@@ -23,6 +23,7 @@ type Client struct {
 const dataFile = "telegramContactsCrmConsulting.json"
 
 func StartTgBot() {
+	log.Println("Starting Telegram Bot")
 	ctx, cancel := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer cancel()
 
