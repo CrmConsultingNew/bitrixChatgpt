@@ -21,7 +21,6 @@ import (
 
 func main() {
 
-	log.Println("main started")
 	go webinar.StartTgBot()
 
 	if err := godotenv.Load(filepath.Join(".env")); err != nil {

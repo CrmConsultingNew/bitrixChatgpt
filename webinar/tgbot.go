@@ -9,9 +9,44 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"time"
 )
 
 //780504069:AAH7Ld_hobbvEkCZi8fpdKUIEXirpG4raCQ
+
+const webinarDate = "2025-02-27"   // Дата вебинара
+const testUserID int64 = 947654127 // Тестовый user_id
+const botToken = "780504069:AAH7Ld_hobbvEkCZi8fpdKUIEXirpG4raCQ"
+
+// Функция проверки даты и отправки напоминания
+func SendReminder(b *bot.Bot) {
+	today := time.Now().Format("2006-01-02")
+	reminderDate := "2025-02-25" // За два дня до вебинара
+
+	if today == reminderDate {
+		message := fmt.Sprintf(`*Напоминание о вебинаре\!*  
+
+Здравствуйте\! Мы напоминаем вам, что уже через 2 дня состоится наш вебинар по внедрению AI в CRM\-системы\.  
+
+📅 *Дата и время:* *%s, 11:00 МСК*  
+📌 Ссылка на подключение будет отправлена вам перед мероприятием\.  
+
+Ждем вас на вебинаре\!`, webinarDate)
+
+		ctx := context.Background()
+		_, err := b.SendMessage(ctx, &bot.SendMessageParams{
+			ChatID:    testUserID,
+			Text:      message,
+			ParseMode: "MarkdownV2",
+		})
+
+		if err != nil {
+			log.Printf("Ошибка при отправке напоминания: %v", err)
+		} else {
+			log.Println("Напоминание успешно отправлено тестовому пользователю")
+		}
+	}
+}
 
 // Структура для хранения данных клиента
 type Client struct {
@@ -33,10 +68,13 @@ func StartTgBot() {
 		bot.WithDefaultHandler(handler),
 	}
 
-	b, err := bot.New("780504069:AAH7Ld_hobbvEkCZi8fpdKUIEXirpG4raCQ", opts...)
+	b, err := bot.New(botToken, opts...)
 	if err != nil {
 		panic(err)
 	}
+
+	// Запускаем отправку напоминания
+	go SendReminder(b)
 
 	b.Start(ctx)
 	log.Println("b.ID():", b.ID())
@@ -51,7 +89,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	user := update.Message.From
 	client := Client{
 		UserID:    user.ID,
-		FirstName: user.FirstName, // Оставляем как есть (с описанием и ссылками)
+		FirstName: user.FirstName,
 		LastName:  user.LastName,
 		Username:  user.Username,
 	}
@@ -85,7 +123,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 
 *Гайд "7 возможностей искусственного интеллекта в Битрикс24 для роста продаж"*  
 
-[Забрать подарок](https://drive.google.com/file/d/12M2orgisNmy9cMKdPgcpZzLpJioRVMIV/view?usp=sharing)  
+[Забрать подарок](https://drive.google.com/file/d/1gFM1KR9NDqBv2EKLzW_SzWO5ft9qnxhE/view?usp=drive_link)  
 
 До встречи на вебинаре\!  
 
