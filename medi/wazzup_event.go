@@ -8,6 +8,24 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
+)
+
+var (
+	thankYouMessages = []string{
+		"Спасибо за вашу оценку! Нам важно ваше мнение, поделитесь на сайте: https://medi-clinic.ru/otzyivyi/#to",
+		"Благодарим вас за отзыв! Мы ценим ваше доверие. Оставьте свой отзыв здесь: https://medi-clinic.ru/otzyivyi/#to",
+		"Спасибо! Ваши впечатления помогают нам становиться лучше. Поделитесь ими на сайте: https://medi-clinic.ru/otzyivyi/#to",
+		"Благодарим за высокую оценку! Нам приятно, что вы довольны. Напишите отзыв: https://medi-clinic.ru/otzyivyi/#to",
+		"Спасибо! Ваш отзыв важен для нас. Оставьте его на нашем сайте: https://medi-clinic.ru/otzyivyi/#to",
+		"Благодарим за вашу поддержку! Мы рады стараться для вас. Поделитесь мнением: https://medi-clinic.ru/otzyivyi/#to",
+		"Спасибо! Оставьте, пожалуйста, отзыв на нашем сайте: https://medi-clinic.ru/otzyivyi/#to",
+		"Благодарим за оценку! Ваше мнение помогает нам расти. Напишите его здесь: https://medi-clinic.ru/otzyivyi/#to",
+		"Спасибо! Нам ценно ваше доверие. Поделитесь отзывом: https://medi-clinic.ru/otzyivyi/#to",
+		"Благодарим! Поделитесь вашим опытом на нашем сайте: https://medi-clinic.ru/otzyivyi/#to",
+	}
+	responseIndex int
+	responseMutex sync.Mutex
 )
 
 type WazzupMessage struct {
@@ -22,52 +40,47 @@ type WazzupMessage struct {
 
 func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
-	log.Println("WazzupEventMessage was startedz <-")
+	log.Println("WazzupEventMessage started")
 
-	// Читаем тело запроса
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Ошибка при чтении тела запроса:", err)
 		return
 	}
+	log.Println("Received request:", string(body))
 
-	log.Println("WazzupEventMessage:", string(body))
-
-	// Парсим JSON
 	var event WazzupMessage
 	if err := json.Unmarshal(body, &event); err != nil {
 		log.Println("Ошибка при разборе JSON:", err)
 		return
 	}
 
-	// Загружаем контакты из JSON-файла
 	contacts, err := loadContacts("mediDealsAndContacts.json")
 	if err != nil {
 		log.Println("Ошибка загрузки контактов:", err)
 		return
 	}
 
-	log.Println("Event messages: ", event.Messages)
-
-	// Проверяем каждое сообщение
 	for _, msg := range event.Messages {
-		log.Println("Message TEXT: ", msg.Text)
 		if isValidRating(msg.Text) && isPhoneInContacts(msg.ChatID, contacts) {
 			log.Println("Отправляем благодарственное сообщение пользователю:", msg.ChatID)
-			sendMessageToWazzupReport("cf4f9e0a30ff4bb2adf92de77141c488", msg.ChannelID, msg.ChatID, msg.ChatType, "Благодарим Вас за высокую оценку. Пожалуйста поделитесь Вашими впечатлениями на сайте: https://medi-clinic.ru/otzyivyi/#to")
+
+			responseMutex.Lock()
+			messageText := thankYouMessages[responseIndex]
+			responseIndex = (responseIndex + 1) % len(thankYouMessages)
+			responseMutex.Unlock()
+
+			sendMessageToWazzupReport("cf4f9e0a30ff4bb2adf92de77141c488", msg.ChannelID, msg.ChatID, msg.ChatType, messageText)
 		} else {
 			log.Println("isNotValid:", msg.Text)
 		}
 	}
 }
 
-// Проверяет, является ли сообщение числом от 4 до 5
 func isValidRating(text string) bool {
-	log.Println("isValidRating:", text)
 	return text == "4" || text == "5"
 }
 
-// Загружает контакты из JSON-файла
 func loadContacts(filename string) (map[string]string, error) {
 	file, err := os.ReadFile(filename)
 	if err != nil {
@@ -81,21 +94,17 @@ func loadContacts(filename string) (map[string]string, error) {
 	return contacts, nil
 }
 
-// Проверяет, есть ли номер телефона в файле контактов
 func isPhoneInContacts(phone string, contacts map[string]string) bool {
-	for _, v := range contacts {
-		if v == phone {
+	for _, storedPhone := range contacts {
+		if storedPhone == phone {
 			return true
 		}
 	}
 	return false
 }
 
-// Отправляет сообщение через Wazzup API
 func sendMessageToWazzupReport(apiKey, channelId, chatId, chatType, textMessage string) {
-	log.Println("sendMessageToWazzupGetReport was started....")
 	url := "https://api.wazzup24.com/v3/message"
-
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"channelId": channelId,
 		"chatId":    chatId,
