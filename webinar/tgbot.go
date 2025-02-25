@@ -11,6 +11,8 @@ import (
 	"os/signal"
 )
 
+//780504069:AAH7Ld_hobbvEkCZi8fpdKUIEXirpG4raCQ
+
 // Структура для хранения данных клиента
 type Client struct {
 	UserID    int64  `json:"user_id"`
@@ -49,7 +51,7 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	user := update.Message.From
 	client := Client{
 		UserID:    user.ID,
-		FirstName: user.FirstName,
+		FirstName: user.FirstName, // Оставляем как есть (с описанием и ссылками)
 		LastName:  user.LastName,
 		Username:  user.Username,
 	}
@@ -99,24 +101,47 @@ func handler(ctx context.Context, b *bot.Bot, update *models.Update) {
 	})
 }
 
-// Функция для сохранения данных клиента в JSON-файл
+// Функция для сохранения данных клиента в JSON-файл (с поддержкой массива)
 func saveClientData(client Client) {
-	file, err := os.OpenFile(dataFile, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	clients := loadClients()
+
+	// Добавляем нового клиента
+	clients = append(clients, client)
+
+	// Перезаписываем JSON-файл с массивом (валидный JSON)
+	file, err := os.OpenFile(dataFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Printf("Ошибка при открытии файла: %v", err)
 		return
 	}
 	defer file.Close()
 
-	// Кодируем клиента в JSON и записываем в файл с новой строки
-	clientData, err := json.Marshal(client)
-	if err != nil {
-		log.Printf("Ошибка при кодировании JSON: %v", err)
-		return
-	}
-
-	_, err = file.WriteString(string(clientData) + "\n")
+	encoder := json.NewEncoder(file)
+	encoder.SetIndent("", "  ") // Красивый JSON с отступами
+	err = encoder.Encode(clients)
 	if err != nil {
 		log.Printf("Ошибка при записи в файл: %v", err)
 	}
+}
+
+// Функция загрузки клиентов из файла
+func loadClients() []Client {
+	var clients []Client
+
+	file, err := os.ReadFile(dataFile)
+	if err != nil {
+		if os.IsNotExist(err) {
+			return []Client{} // Файл еще не создан
+		}
+		log.Printf("Ошибка при чтении файла: %v", err)
+		return []Client{}
+	}
+
+	err = json.Unmarshal(file, &clients)
+	if err != nil {
+		log.Printf("Ошибка при разборе JSON: %v", err)
+		return []Client{}
+	}
+
+	return clients
 }
