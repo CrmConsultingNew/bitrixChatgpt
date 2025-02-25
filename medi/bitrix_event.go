@@ -15,14 +15,19 @@ const filePath = "mediDealsAndContacts.json"
 
 func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 	log.Println("EventHandlerMedi was started")
+
+	// Читаем тело запроса
 	body, err := io.ReadAll(r.Body)
 	if err != nil {
 		log.Println("Error reading body:", err)
 		http.Error(w, "Failed to read request body", http.StatusBadRequest)
 		return
 	}
+	defer r.Body.Close()
+
 	log.Println("EventHandlerMedi raw data:", string(body))
 
+	// Декодируем URL-данные из тела запроса
 	decodedBody, err := url.QueryUnescape(string(body))
 	if err != nil {
 		log.Println("Error decoding URL:", err)
@@ -30,6 +35,7 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Разбираем параметры из запроса
 	values, err := url.ParseQuery(decodedBody)
 	if err != nil {
 		log.Println("Error parsing query:", err)
@@ -37,27 +43,29 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	event := values.Get("event")
-	eventHandlerID := values.Get("event_handler_id")
-	dealID := values.Get("data[FIELDS][ID]")
+	// Новый формат данных в Битрикс
+	event := values.Get("deal_event")
+	dealID := values.Get("document_id[2]") // Теперь ID сделки передается тут
+	contactID := values.Get("contact_id")  // Получаем контакт, если передается
 
-	log.Printf("Event: %s, EventHandlerID: %s, DealID: %s\n", event, eventHandlerID, dealID)
+	log.Printf("Event: %s, DealID: %s, ContactID: %s\n", event, dealID, contactID)
 	log.Println("Extracted values:", values)
 
+	// Если есть сделка
 	if dealID != "" {
-		contactId := getDealData(dealID)
+		contactId := getDealData(dealID) // Запрашиваем контакт по сделке
 		if contactId != "" {
-			contactPhone := getContactData(contactId)
+			contactPhone := getContactData(contactId) // Получаем телефон контакта
 			log.Println("CONTACT_PHONE is:", contactPhone)
 
 			if err := updateJSONFile(dealID, contactPhone); err != nil {
 				log.Println("Failed to update JSON file:", err)
 			}
 
-			/*message := getSequentialMessage()
-			log.Println("Sending message:", message)
-			sendMessageToWazzupGetReport("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", contactPhone, "whatsapp", message)
-			*/
+			// Отправляем сообщение (если нужно)
+			// message := getSequentialMessage()
+			// log.Println("Sending message:", message)
+			// sendMessageToWazzupGetReport("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", contactPhone, "whatsapp", message)
 		} else {
 			log.Println("CONTACT_ID is empty")
 		}
@@ -65,8 +73,9 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 		log.Println("dealID is empty — skipping contact lookup")
 	}
 
+	// Отправляем HTTP-ответ
 	w.WriteHeader(http.StatusOK)
-	fmt.Fprintf(w, "Received event: %s, handler ID: %s, deal ID: %s", event, eventHandlerID, dealID)
+	fmt.Fprintf(w, "Received event: %s, deal ID: %s, contact ID: %s", event, dealID, contactID)
 }
 
 func updateJSONFile(dealID, contactPhone string) error {
