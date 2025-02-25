@@ -55,14 +55,8 @@ func WazzupEventMessage(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	contacts, err := loadContacts("mediDealsAndContacts.json")
-	if err != nil {
-		log.Println("Ошибка загрузки контактов:", err)
-		return
-	}
-
 	for _, msg := range event.Messages {
-		if isValidRating(msg.Text) && isPhoneInContacts(msg.ChatID, contacts) {
+		if isValidRating(msg.Text) {
 			log.Println("Отправляем благодарственное сообщение пользователю:", msg.ChatID)
 
 			responseMutex.Lock()
