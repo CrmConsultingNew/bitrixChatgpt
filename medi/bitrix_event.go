@@ -54,10 +54,10 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 				log.Println("Failed to update JSON file:", err)
 			}
 
-			message := getSequentialMessage()
+			/*message := getSequentialMessage()
 			log.Println("Sending message:", message)
 			sendMessageToWazzupGetReport("cf4f9e0a30ff4bb2adf92de77141c488", "eec3fca0-ba9d-4bf5-89a3-35ec3080c2ae", contactPhone, "whatsapp", message)
-
+			*/
 		} else {
 			log.Println("CONTACT_ID is empty")
 		}
