@@ -22,7 +22,7 @@ import (
 func main() {
 
 	log.Println("main started")
-	webinar.StartTgBot()
+	go webinar.StartTgBot()
 
 	if err := godotenv.Load(filepath.Join(".env")); err != nil {
 		log.Print("No .env file found")
