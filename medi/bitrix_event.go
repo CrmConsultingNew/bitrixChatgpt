@@ -9,6 +9,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strings"
 )
 
 const filePath = "mediDealsAndContacts.json"
@@ -45,15 +46,18 @@ func EventHandlerMedi(w http.ResponseWriter, r *http.Request) {
 
 	// Новый формат данных в Битрикс
 	event := values.Get("deal_event")
-	dealID := values.Get("document_id[2]") // Теперь ID сделки передается тут
-	contactID := values.Get("contact_id")  // Получаем контакт, если передается
+	dealIDRaw := values.Get("document_id[2]") // Получаем DEAL_ID в формате "DEAL_130810"
+	contactID := values.Get("contact_id")     // Получаем контакт, если передается
+
+	// Убираем "DEAL_" из dealID
+	dealID := strings.TrimPrefix(dealIDRaw, "DEAL_")
 
 	log.Printf("Event: %s, DealID: %s, ContactID: %s\n", event, dealID, contactID)
 	log.Println("Extracted values:", values)
 
 	// Если есть сделка
 	if dealID != "" {
-		contactId := getDealData(dealID) // Запрашиваем контакт по сделке
+		contactId := getDealData(dealID) // Передаем только число
 		if contactId != "" {
 			contactPhone := getContactData(contactId) // Получаем телефон контакта
 			log.Println("CONTACT_PHONE is:", contactPhone)
