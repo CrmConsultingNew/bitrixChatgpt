@@ -6,7 +6,6 @@ import (
 	"bitrix_app/backend/routes"
 	"bitrix_app/medi"
 	"bitrix_app/metrologiya"
-	"bitrix_app/webinar"
 	"fmt"
 	"github.com/joho/godotenv"
 	"github.com/xuri/excelize/v2"
@@ -21,7 +20,7 @@ import (
 
 func main() {
 
-	go webinar.StartTgBot()
+	//go webinar.StartTgBot()
 
 	if err := godotenv.Load(filepath.Join(".env")); err != nil {
 		log.Print("No .env file found")
